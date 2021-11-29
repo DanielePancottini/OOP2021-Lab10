@@ -2,6 +2,7 @@ package it.unibo.oop.lab.lambda.ex01;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -15,10 +16,10 @@ import java.util.stream.IntStream;
 
 /**
  * This class will contain four utility functions on lists and maps, of which the first one is provided as example.
- * 
+ *
  * All such methods take as second argument a functional interface from the Java library (java.util.function).
  * This enables calling them by using the concise lambda syntax, as it's done in the main function.
- * 
+ *
  * Realize the three methods **WITHOUT** using the Stream library, but only leveraging the lambdas.
  *
  */
@@ -58,10 +59,9 @@ public final class LambdaUtilities {
      *         otherwise.
      */
     public static <T> List<Optional<T>> optFilter(final List<T> list, final Predicate<T> pre) {
-        /*
-         * Suggestion: consider Optional.filter
-         */
-        return null;
+       final List<Optional<T>> resultList = new ArrayList<>();
+       list.forEach(elem -> resultList.add(Optional.of(elem).filter(pre)));
+       return resultList;
     }
 
     /**
@@ -77,10 +77,12 @@ public final class LambdaUtilities {
      *         based on the mapping done by the function
      */
     public static <R, T> Map<R, Set<T>> group(final List<T> list, final Function<T, R> op) {
-        /*
-         * Suggestion: consider Map.merge
-         */
-        return null;
+        final Map<R, Set<T>> resultMap = new HashMap<>();
+        list.forEach(elem -> resultMap.merge(op.apply(elem), new HashSet<>(Set.of(elem)), (oldSet, newSet) -> {
+            newSet.addAll(oldSet);
+            return newSet;
+        }));
+        return resultMap;
     }
 
     /**
@@ -96,12 +98,9 @@ public final class LambdaUtilities {
      *         by the supplier
      */
     public static <K, V> Map<K, V> fill(final Map<K, Optional<V>> map, final Supplier<V> def) {
-        /*
-         * Suggestion: consider Optional.orElse
-         * 
-         * Keep in mind that a map can be iterated through its forEach method
-         */
-        return null;
+        Map<K, V> resultMap = new HashMap<>();
+        map.forEach((key, value) -> resultMap.put(key, value.orElse(def.get())));
+        return resultMap;
     }
 
     /**
